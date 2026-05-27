@@ -11,7 +11,7 @@ dependencies = [
 
 [project.scripts]
 sprawdzarka = "sprawdzarka.cli:main"
+sprawdzarka-web = "sprawdzarka.web:main"
 
 [tool.ruff]
 line-length = 100
-

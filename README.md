@@ -46,6 +46,29 @@ Wynik jako JSON:
 sprawdzarka --task-file .\zadanie.txt --code .\agent --json
 ```
 
+## Interfejs w przegladarce
+
+Po instalacji pakietu mozesz uruchomic lokalny interfejs graficzny:
+
+```powershell
+sprawdzarka-web --open
+```
+
+Albo bez instalowania skryptu:
+
+```powershell
+python -m sprawdzarka.web --open
+```
+
+Domyslny adres to:
+
+```text
+http://127.0.0.1:8765
+```
+
+W formularzu wpisz opis zadania, sciezke do folderu lub plikow z kodem oraz opcjonalna
+komende testow, np. `pytest`.
+
 ## Co sprawdza
 
 - Czy kod odpowiada na opisane wymaganie.
