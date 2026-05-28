@@ -5,8 +5,11 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 .mypy_cache/
+node_modules/
 dist/
+dist-server/
 build/
 *.egg-info/
 .env
 audit-report.json
+*.log

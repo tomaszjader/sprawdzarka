@@ -1,17 +1,15 @@
-# sprawdzarka
+# Sprawdzarka
 
-`sprawdzarka` to mały program CLI, który ocenia, czy kod realizuje opisane zadanie.
-Przykład: podajesz opis agenta AI, który ma łączyć się z pogodą, oraz folder z kodem,
-a program zwraca werdykt, czy to połączenie i logika naprawdę są zaimplementowane.
+`sprawdzarka` to lokalna aplikacja React + TypeScript, która ocenia, czy kod realizuje opisane zadanie.
+Podajesz opis wymagania, ścieżkę do folderu lub plików z kodem i opcjonalną komendę testów, a aplikacja zwraca ustrukturyzowany werdykt.
 
-Program używa OpenAI API, Responses API i ustrukturyzowanego wyniku JSON.
+Backend działa w Node.js, czyta lokalne pliki, może uruchomić testy i wysyła audyt do OpenAI Responses API.
+Frontend jest napisany w React i TypeScript.
 
 ## Instalacja
 
 ```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -e .
+npm install
 ```
 
 Ustaw klucz API:
@@ -26,48 +24,39 @@ Opcjonalnie ustaw model:
 $env:OPENAI_MODEL="gpt-5.5"
 ```
 
-## Użycie
-
-Sprawdzenie folderu z kodem:
+## Uruchomienie w trybie developerskim
 
 ```powershell
-sprawdzarka --task "Agent AI ma odpowiadać na pytania o pogodę, używać prawdziwego API pogody i obsługiwać błędy." --code .\agent
+npm run dev
 ```
 
-Sprawdzenie z wynikiem testów:
+Domyślne adresy:
+
+```text
+Frontend: http://127.0.0.1:5173
+Backend:  http://127.0.0.1:8765
+```
+
+Jeśli port backendu jest zajęty, uruchom aplikację na innym porcie:
 
 ```powershell
-sprawdzarka --task-file .\zadanie.txt --code .\agent --test-command "pytest"
+$env:PORT="8766"
+$env:BACKEND_PORT="8766"
+npm run dev
 ```
 
-Wynik jako JSON:
+## Build i start produkcyjny
 
 ```powershell
-sprawdzarka --task-file .\zadanie.txt --code .\agent --json
+npm run build
+npm start
 ```
 
-## Interfejs w przegladarce
-
-Po instalacji pakietu mozesz uruchomic lokalny interfejs graficzny:
-
-```powershell
-sprawdzarka-web --open
-```
-
-Albo bez instalowania skryptu:
-
-```powershell
-python -m sprawdzarka.web --open
-```
-
-Domyslny adres to:
+Po starcie produkcyjnym aplikacja jest dostępna pod adresem:
 
 ```text
 http://127.0.0.1:8765
 ```
-
-W formularzu wpisz opis zadania, sciezke do folderu lub plikow z kodem oraz opcjonalna
-komende testow, np. `pytest`.
 
 ## Co sprawdza
 
@@ -76,5 +65,4 @@ komende testow, np. `pytest`.
 - Czy są obsłużone konfiguracja, błędy i przypadki brzegowe.
 - Czy testy albo komenda uruchomieniowa potwierdzają działanie.
 
-To nie zastępuje normalnych testów, ale daje szybki audyt semantyczny: czy intencja
-zadania zgadza się z tym, co kod faktycznie robi.
+To nie zastępuje normalnych testów, ale daje szybki audyt semantyczny: czy intencja zadania zgadza się z tym, co kod faktycznie robi.
