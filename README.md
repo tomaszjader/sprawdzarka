@@ -6,6 +6,12 @@ Podajesz opis wymagania, ścieżkę do folderu lub plików z kodem i opcjonalną
 Backend działa w Node.js. Czyta lokalne pliki, może uruchomić wskazaną komendę testową i wysyła audyt do OpenAI Responses API.
 Frontend jest napisany w React i TypeScript.
 
+## Ważne o lokalnych ścieżkach
+
+Aplikacja działa jako narzędzie lokalne i czyta pliki ze ścieżek, które podasz w formularzu. Podawaj tylko katalogi albo pliki, które faktycznie chcesz uwzględnić w audycie.
+
+Kod z zebranych plików jest wysyłany do OpenAI API razem z opisem zadania i wynikiem testów. Nie podawaj ścieżek zawierających sekrety, prywatne dane, pliki `.env`, klucze API ani inne materiały, których nie chcesz przekazać do analizy.
+
 ## Wymagania
 
 - Node.js

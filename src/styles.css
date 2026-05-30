@@ -104,6 +104,10 @@ textarea {
   font-size: 13px;
 }
 
+.field .warning {
+  color: #8a4b0f;
+}
+
 textarea,
 input {
   width: 100%;

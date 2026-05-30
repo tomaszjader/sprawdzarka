@@ -118,6 +118,10 @@ export default function App() {
               placeholder="Np. C:\\projekty\\agent albo .\\agent"
             />
             <small>Kilka sciezek oddziel przecinkiem albo wpisz kazda w nowej linii.</small>
+            <small className="warning">
+              Aplikacja czyta lokalne pliki z podanych sciezek i wysyla ich tresc do audytu. Nie podawaj
+              katalogow z sekretami, plikami .env ani prywatnymi danymi.
+            </small>
           </label>
 
           <label className="field">
