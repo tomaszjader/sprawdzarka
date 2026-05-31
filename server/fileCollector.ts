@@ -41,11 +41,44 @@ const skipDirs = new Set([
   "venv"
 ]);
 
+const skipFileNames = new Set([
+  ".env",
+  ".env.local",
+  ".env.development",
+  ".env.production",
+  ".env.test",
+  ".npmrc",
+  ".pypirc",
+  "id_dsa",
+  "id_ecdsa",
+  "id_ed25519",
+  "id_rsa"
+]);
+
+const skipExtensions = new Set([
+  ".cer",
+  ".crt",
+  ".der",
+  ".key",
+  ".p12",
+  ".pem",
+  ".pfx"
+]);
+
+function shouldSkipFile(fileName: string): boolean {
+  const lowerName = fileName.toLowerCase();
+  return skipFileNames.has(lowerName) || skipExtensions.has(path.extname(lowerName));
+}
+
 async function walk(targetPath: string): Promise<string[]> {
   const absolutePath = path.resolve(targetPath);
   const details = await stat(absolutePath);
 
   if (details.isFile()) {
+    if (shouldSkipFile(path.basename(absolutePath))) {
+      return [];
+    }
+
     const ext = path.extname(absolutePath).toLowerCase();
     return textExtensions.has(ext) || ext === "" ? [absolutePath] : [];
   }
@@ -68,7 +101,7 @@ async function walk(targetPath: string): Promise<string[]> {
       continue;
     }
 
-    if (entry.isFile() && textExtensions.has(path.extname(entry.name).toLowerCase())) {
+    if (entry.isFile() && !shouldSkipFile(entry.name) && textExtensions.has(path.extname(entry.name).toLowerCase())) {
       collected.push(entryPath);
     }
   }
