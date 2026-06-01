@@ -1,6 +1,9 @@
 import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 
+const maxFiles = 500;
+const maxFileBytes = 1_000_000;
+
 const textExtensions = new Set([
   ".c",
   ".cpp",
@@ -52,7 +55,10 @@ const skipFileNames = new Set([
   "id_dsa",
   "id_ecdsa",
   "id_ed25519",
-  "id_rsa"
+  "id_rsa",
+  "package-lock.json",
+  "pnpm-lock.yaml",
+  "yarn.lock"
 ]);
 
 const skipExtensions = new Set([
@@ -72,7 +78,13 @@ function shouldSkipFile(fileName: string): boolean {
 
 async function walk(targetPath: string): Promise<string[]> {
   const absolutePath = path.resolve(targetPath);
-  const details = await stat(absolutePath);
+  let details;
+
+  try {
+    details = await stat(absolutePath);
+  } catch {
+    return [];
+  }
 
   if (details.isFile()) {
     if (shouldSkipFile(path.basename(absolutePath))) {
@@ -80,14 +92,21 @@ async function walk(targetPath: string): Promise<string[]> {
     }
 
     const ext = path.extname(absolutePath).toLowerCase();
-    return textExtensions.has(ext) || ext === "" ? [absolutePath] : [];
+    return (textExtensions.has(ext) || ext === "") && details.size <= maxFileBytes ? [absolutePath] : [];
   }
 
   if (!details.isDirectory()) {
     return [];
   }
 
-  const entries = await readdir(absolutePath, { withFileTypes: true });
+  let entries;
+
+  try {
+    entries = await readdir(absolutePath, { withFileTypes: true });
+  } catch {
+    return [];
+  }
+
   const collected: string[] = [];
 
   for (const entry of entries) {
@@ -101,16 +120,39 @@ async function walk(targetPath: string): Promise<string[]> {
       continue;
     }
 
-    if (entry.isFile() && !shouldSkipFile(entry.name) && textExtensions.has(path.extname(entry.name).toLowerCase())) {
-      collected.push(entryPath);
+    if (!entry.isFile() || shouldSkipFile(entry.name) || !textExtensions.has(path.extname(entry.name).toLowerCase())) {
+      continue;
+    }
+
+    try {
+      const details = await stat(entryPath);
+      if (details.size <= maxFileBytes) {
+        collected.push(entryPath);
+      }
+    } catch {
+      continue;
+    }
+
+    if (collected.length >= maxFiles) {
+      break;
     }
   }
 
   return collected;
 }
 
+function displayPath(filePath: string): string {
+  const relativePath = path.relative(process.cwd(), filePath);
+
+  if (relativePath && !relativePath.startsWith("..") && !path.isAbsolute(relativePath)) {
+    return relativePath;
+  }
+
+  return path.basename(filePath);
+}
+
 export async function collectCode(paths: string[], maxChars: number): Promise<string> {
-  const files = [...new Set((await Promise.all(paths.map(walk))).flat())].sort();
+  const files = [...new Set((await Promise.all(paths.map(walk))).flat())].sort().slice(0, maxFiles);
   const chunks: string[] = [];
   let used = 0;
 
@@ -122,7 +164,7 @@ export async function collectCode(paths: string[], maxChars: number): Promise<st
       continue;
     }
 
-    const header = `\n\n--- FILE: ${filePath} ---\n`;
+    const header = `\n\n--- FILE: ${displayPath(filePath)} ---\n`;
     const remaining = maxChars - used - header.length;
     if (remaining <= 0) {
       break;

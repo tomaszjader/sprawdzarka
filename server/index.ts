@@ -8,9 +8,12 @@ import { runTestCommand } from "./testRunner.js";
 
 const AuditRequestSchema = z.object({
   task: z.string().trim().min(1, "Wpisz zadanie do sprawdzenia."),
-  codePaths: z.array(z.string().trim().min(1)).min(1, "Podaj przynajmniej jedna sciezke do kodu."),
-  testCommand: z.string().trim().optional(),
-  testCwd: z.string().trim().optional(),
+  codePaths: z
+    .array(z.string().trim().min(1).max(500))
+    .min(1, "Podaj przynajmniej jedna sciezke do kodu.")
+    .max(20, "Podaj maksymalnie 20 sciezek do kodu."),
+  testCommand: z.string().trim().max(300).optional(),
+  testCwd: z.string().trim().max(500).optional(),
   model: z.string().trim().optional(),
   maxChars: z.number().int().min(1000).max(1_000_000).default(120_000)
 });

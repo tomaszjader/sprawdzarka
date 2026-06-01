@@ -12,6 +12,20 @@ Aplikacja działa jako narzędzie lokalne i czyta pliki ze ścieżek, które pod
 
 Kod z zebranych plików jest wysyłany do OpenAI API razem z opisem zadania i wynikiem testów. Nie podawaj ścieżek zawierających sekrety, prywatne dane, pliki `.env`, klucze API ani inne materiały, których nie chcesz przekazać do analizy.
 
+Zbieranie plików ma kilka zabezpieczeń:
+
+- pomijane są katalogi typu `.git`, `node_modules`, `dist`, `.venv` i podobne,
+- pomijane są pliki sekretów, np. `.env`, `.npmrc`, klucze SSH i certyfikaty,
+- pomijane są lockfile, np. `package-lock.json`, `pnpm-lock.yaml`, `yarn.lock`,
+- pojedynczy plik większy niż 1 MB nie jest zbierany,
+- maksymalnie zbieranych jest 500 plików.
+
+## Ważne o komendach testowych
+
+Komenda testowa jest uruchamiana lokalnie w katalogu wskazanym w formularzu. Wpisuj tylko komendy, którym ufasz, np. `npm test`, `npm run typecheck`, `pytest`.
+
+Aplikacja odrzuca część oczywiście niebezpiecznych komend, ale nie zastępuje to zdrowego rozsądku. Nie wpisuj komend usuwających pliki, zmieniających konfigurację systemu ani uruchamiających nieznane skrypty.
+
 ## Wymagania
 
 - Node.js
